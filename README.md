@@ -1,9 +1,9 @@
 # Mission Statement
-To leave behind a better world than the one we came into. 
-To accept no compromise on the innocence of children, and the protection of the innocent. 
-To treat each other with love and decency. 
-To stand against tyrany and oppression. 
-To stop the meaningless and wasteful wars. 
+To leave behind a better world than the one we came into.  
+To accept no compromise on the innocence of children, and the protection of the innocent.  
+To treat each other with love and decency.  
+To stand against tyrany and oppression.  
+To stop the meaningless and wasteful wars.  
 
 To provide the basic neccesities, shelter and sustenance, so that humanity can truly be unleashed.
 
