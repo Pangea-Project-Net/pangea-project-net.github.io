@@ -1,0 +1,12 @@
+title: The Pangea Project
+description: >-
+  To leave behind a better world than the one we came into.
+baseurl: ""
+url: "https://pangea-project.net"
+
+theme: jekyll-theme-slate
+
+# Navigation links shown in site header
+header_pages:
+  - donate.md
+  - download.md

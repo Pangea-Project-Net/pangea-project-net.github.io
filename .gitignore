@@ -1,0 +1,14 @@
+# Jekyll build output
+_site/
+
+# Local editor settings
+.vscode/
+
+# CI / build artifacts
+download/
+
+# Bundler
+.bundle/
+
+# Mac system files
+.DS_Store
