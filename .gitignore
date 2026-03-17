@@ -4,9 +4,6 @@ _site/
 # Local editor settings
 .vscode/
 
-# CI / build artifacts
-download/
-
 # Bundler
 .bundle/
 
