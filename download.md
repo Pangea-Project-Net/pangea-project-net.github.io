@@ -15,9 +15,9 @@ Stay up to date with the latest stable release of the PangeaNet App. The app is 
 
 ### Download
 
-- **Windows (x86_64)** – [Download installer](https://www.pangea-project.net/download/v0.1.2/PangeaNet-Alpha-v0.1.2-combined-installer.zip)
+- **Windows (x86_64)** – [Download installer](https://pangea-project.net/download/v0.1.2/PangeaNet-Alpha-v0.1.2-combined-installer.zip)
 - **macOS (Intel/Apple Silicon)** – Not available yet. If you'd like macOS support, please [open an issue](https://github.com/pangea-project-net/pangea-project-net/issues/new) and consider [donating](/donate/) to help prioritize the work.
-- **Linux (x86_64)** – [Download .deb](https://www.pangea-project.net/download/v0.1.2/PangeaNet-0.1.2.deb)
+- **Linux (x86_64)** – [Download .deb](https://pangea-project.net/download/v0.1.2/PangeaNet-0.1.2.deb)
 
 ---
 
