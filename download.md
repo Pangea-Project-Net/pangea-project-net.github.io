@@ -11,7 +11,7 @@ Stay up to date with the latest stable release of the PangeaNet App. The app is 
 ### Current Release (Alpha v0.1.3)
 
 - **Version:** 0.1.3
-- **Release Date:** 2026-04-28
+- **Release Date:** 2026-05-02
 
 ### Download
 
