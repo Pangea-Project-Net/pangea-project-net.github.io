@@ -25,7 +25,7 @@ Stay up to date with the latest stable release of the PangeaNet App. The app is 
 
 ### Highlights
 
-- **Application Performance, Stability and Security**: This release centers mostly around enhancing the guts of the application and it's underlying technologies. The biggest specific updates being that the energy efficient Proof of Authority blockchain implementation should now be 100% complete, (pending any bugs I missed during my own testing) and all network communication between peers should now be fully encrypted end to end.
+- **Application Performance, Stability and Security**: This release centers mostly around enhancing the guts of the application and it's underlying technologies. The biggest specific updates being that the energy efficient Proof of Authority blockchain implementation should now be 100% complete, (pending any bugs I missed during my own testing) and all network communication between peers should now be fully encrypted end to end. The Page loading and debug logging has also been made to run more asynchronously, which means things happen in the background without blocking and freezing up the user interface (UI).
 
 
 ### Known Issues
