@@ -10,3 +10,4 @@ theme: jekyll-theme-slate
 header_pages:
   - donate.md
   - download.md
+  - USER_GUIDE.md
