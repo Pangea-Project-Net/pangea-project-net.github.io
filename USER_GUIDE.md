@@ -8,7 +8,7 @@ permalink: /user-guide/
 
 **Version:** 0.1.3 Alpha | **Last Updated:** May 2026
 
-Welcome to PangeaNet! This guide walks you through every feature available right now, from creating your account to sharing pages and participating in communities.
+Welcome to PangeaNet! This guide walks you through almost every feature available right now, from creating your account to sharing pages and participating in communities.
 
 ---
 
@@ -76,7 +76,7 @@ After logging in you'll see the **main tile window** — a row of large buttons 
 | **Cached Pages** | The Pages from users that you are re-hosting |
 
 At the top of the window you'll also find:
-- **Logout** — logs you out of the application and brings up the login screen - 
+- **Logout** — logs you out of the application and brings up the login screen
 - **Debug toggle** — reveals a diagnostic log panel for troubleshooting
 
 The application also lives in your **system tray** (bottom-right taskbar area on Windows). You can minimize to tray and restore from there. Right-clicking the tray icon gives quick shortcuts including workspace layout management.
