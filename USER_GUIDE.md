@@ -52,7 +52,7 @@ PangeaNet generates a cryptographic identity for you behind the scenes. Your acc
 
 ![Screenshot: Login dialog showing username and password fields](/images/screenshots/03-login-dialog.png)
 
-Enter your username and password, then click **Login**. If you've logged in before, PangeaNet may offer auto-login so you jump straight to the main window.
+Enter your username and password, then click **Login**. If you've logged in before, PangeaNet will offer auto-login so you jump straight to the main window.
 
 ### Logging Out
 
