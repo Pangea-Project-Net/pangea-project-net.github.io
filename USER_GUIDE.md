@@ -6,7 +6,7 @@ permalink: /user-guide/
 
 # PangeaNet — Starter Guide
 
-**Version:** 0.1.3 Alpha | **Last Updated:** May 2026
+**Version:** 0.1.4 Alpha | **Last Updated:** June 2026
 
 Welcome to PangeaNet! This guide walks you through almost every feature available right now, from creating your account to sharing pages and participating in communities.
 
