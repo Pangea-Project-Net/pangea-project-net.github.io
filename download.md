@@ -11,7 +11,7 @@ Stay up to date with the latest stable release of the PangeaNet App. The app is 
 ### Current Release (Alpha v0.1.4)
 
 - **Version:** 0.1.4
-- **Release Date:** 2026-06-02
+- **Release Date:** 2026-06-29
 - **Status:** Alpha — for trusted testers
 
 ### Download
@@ -25,6 +25,8 @@ Stay up to date with the latest stable release of the PangeaNet App. The app is 
 ## Release Notes
 
 ### Overview
+
+Note: This release is a release of 0.1.4 from the beginning of the month. There was a major bug that prevented Admins from being created that got through the testing and since that is the only change in this version I figured a re-release would be appropriate instead of a new version.
 
 Alpha v0.1.4 is a workspace and UI polish release with a complete page-caching and re-hosting pipeline. This version also fixes display name handling, renames Super Admin to PangeaNet Admin across the app, and expands the automated test suite to 16/16 passing targets.
 
