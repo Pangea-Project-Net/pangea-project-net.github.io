@@ -6,7 +6,7 @@ permalink: /user-guide/
 
 # PangeaNet — Starter Guide
 
-**Version:** 0.1.4 Alpha | **Last Updated:** June 2026
+**Version:** 0.1.6 Alpha | **Last Updated:** October 8, 2026
 
 Welcome to PangeaNet! This guide walks you through almost every feature available right now, from creating your account to sharing pages and participating in communities.
 
@@ -18,12 +18,13 @@ Welcome to PangeaNet! This guide walks you through almost every feature availabl
 2. [The Main Window](#2-the-main-window)
 3. [Pages — Your Personal Documents](#3-pages--your-personal-documents)
 4. [Communities — Groups & Collaboration](#4-communities--groups--collaboration)
-5. [Peers — Your Network](#5-peers--your-network)
-6. [Following & Favorites](#6-following--favorites)
-7. [Sharing Pages](#7-sharing-pages)
-8. [User Settings](#8-user-settings)
-9. [Updates](#9-updates)
-10. [Tips & Troubleshooting](#10-tips--troubleshooting)
+5. [Governance — Proposals & Voting](#5-governance--proposals--voting)
+6. [Peers — Your Network](#6-peers--your-network)
+7. [Following & Favorites](#7-following--favorites)
+8. [Sharing Pages](#8-sharing-pages)
+9. [User Settings](#9-user-settings)
+10. [Updates](#10-updates)
+11. [Tips & Troubleshooting](#11-tips--troubleshooting)
 
 ---
 
@@ -167,9 +168,11 @@ Public communities appear in the community list. Click **Join** to become a memb
 
 Communities have their own set of shared pages. Moderators and the creator can add, edit, and delete community pages. Members can view and (with permission) contribute.
 
-To sync pages from peers in the community, click **Sync from Peers** in the community's page list.
+Community page access follows the community's permissions. People without access cannot download restricted community pages. Community page syncing is opt-in: use the **Auto-sync** checkbox in the community page window to choose whether pages sync automatically, or use **Sync from Peers** when you want to request a sync manually.
 
 ![Screenshot: Community detail view showing the member list, role badges, and community pages](/images/screenshots/11-community-detail.png)
+
+When membership ends or a member is kicked or banned, that member's cached pages for the community are removed. Cached pages are also purged from non-members' devices if the community changes from public to non-public. Membership and moderator-role changes sync to connected peers without requiring an app restart. A configured welcome message is shown when someone joins or is approved.
 
 ### Leaving a Community
 
@@ -181,7 +184,47 @@ Creators can edit the community name, description, and settings at any time. Com
 
 ---
 
-## 5. Peers — Your Network
+## 5. Governance — Proposals & Voting
+
+The **Votes** workspace lets you review proposals, cast ballots, manage representatives, and inspect voting history and rules for scopes you are eligible to participate in.
+
+![Screenshot placeholder: Votes workspace showing open proposals, voting history, and current rules](/images/screenshots/18-votes-workspace.png)
+
+### Proposals and voting
+
+Global rules proposals can be created by PangeaNet Admins; community rules proposals can be created by moderators of that community. A proposal shows the previous and proposed rules, the author's rationale, the voting duration, and the passing threshold.
+
+In Release builds, proposals run for **1–31 days** and use a **1–100% passing threshold**. The threshold is the percentage of weighted votes cast that are Yay votes. Not voting is an abstention; there is no separate quorum in this version.
+
+Open a proposal to review its details, then choose Yay or Nay and confirm your ballot in the final confirmation dialog. Recorded ballots cannot be edited.
+
+![Screenshot placeholder: Proposal reader comparing current and proposed rules, rationale, duration, and threshold](/images/screenshots/19-proposal-reader.png)
+
+- A direct ballot **without a statement** is private from public observers.
+- Adding a statement makes your identity, choice, and statement public.
+- Representatives cast public votes and must provide reasoning. Their vote can include eligible delegated voting weight.
+
+Private ballots are **not fully anonymous**: the proposal author holds the key needed to decrypt private ballots and delegated proofs when finalizing the result. The author is therefore a trust and availability dependency.
+
+![Screenshot placeholder: Direct ballot form with Yay and Nay choices and optional statement](/images/screenshots/20-direct-ballot.png)
+
+### Representatives and delegation
+
+Use the separate representative manager to choose a representative for a voting scope or review people represented by you. You may change your selection once every 24 hours. Representatives can choose another representative, so eligible voting weight can pass through multiple representatives. Cycles are rejected, and the same delegated vote cannot be counted twice on a proposal.
+
+![Screenshot placeholder: Representative manager showing scope selection and delegation relationships](/images/screenshots/21-representative-manager.png)
+
+### Results and rules history
+
+The Votes workspace includes voting history and current rules for your eligible scopes. Finalized proposals record their outcome and preserve the adopted rules revision and its history.
+
+![Screenshot placeholder: Voting history showing a finalized result and adopted rules revision](/images/screenshots/22-voting-history.png)
+
+**Validation note:** Governance has automated test coverage, but live multi-device validation—including proposal propagation, delegation changes, reconnect/catch-up, and author-offline behavior—is still pending. Treat this as an alpha feature. It has been tested on a smaller scale but not at a large scale.
+
+---
+
+## 6. Peers — Your Network
 
 The **Peers** window shows everyone currently connected to you on the PangeaNet network.
 
@@ -205,11 +248,11 @@ PangeaNet handles connections automatically:
 
 You don't need to configure anything. Just open the app and peers will appear as they connect.
 
-> **Note:** Direct connections depend on your network setup. If you're behind a restrictive corporate firewall or certain mobile networks, connection may be less reliable. PangeaNet will automatically try relay fallback options.
+> **Note:** Direct connections depend on your network setup. If you're behind a restrictive corporate firewall or certain mobile networks, connection may be less reliable. PangeaNet can use relay-assisted connections when direct connectivity is unavailable, though NAT traversal can still be inconsistent on some networks.
 
 ---
 
-## 6. Following & Favorites
+## 7. Following & Favorites
 
 ### Following a Peer
 
@@ -237,7 +280,7 @@ Your follows and favorites are accessible from the Peers and Pages windows respe
 
 ---
 
-## 7. Sharing Pages
+## 8. Sharing Pages
 
 ### Getting a Share Link
 
@@ -267,10 +310,11 @@ When you share a page that contains images or video, the files are transferred a
 
 ---
 
-## 8. User Settings
+## 9. User Settings
 
 Click the **Settings** tile to open your settings.
 
+Clicking a feature tile brings its already-open window to the front.
 
 ### Account
 
@@ -296,13 +340,13 @@ A "Default" layout is created automatically on first run to preserve your window
 
 ---
 
-## 9. Updates
+## 10. Updates
 
-PangeaNet updates itself through the peer network — Go to the Auto-Updates section of the settings screen to initiate a download of the latest version of PangeaNet.
+PangeaNet distributes updates through the peer network. The client can detect an update, download it, and restart to apply it without requiring you to click through each step.
 
 ### How It Works
 
-When a new version is released, peers who already have it will announce the update to their connections. Your app downloads only the changed files in the background.
+When a new version is released, peers who already have it announce the update to their connections. Your app downloads the update in the background.
 
 ### Update Indicators
 
@@ -310,9 +354,9 @@ When a new version is released, peers who already have it will announce the upda
 - **"Downloading X%"**: The update is transferring in the background.
 - **"Ready to Install"**: Download complete — click to apply.
 
-### Installing an Update
+### Update Status
 
-Click **Install Update** when the download completes. The app will close, apply the update, and reopen. The process takes only a few seconds.
+The update controls report download progress and when an update is ready to apply. The app may close, apply the update, and reopen automatically.
 
 ### Sharing Updates
 
@@ -320,7 +364,7 @@ You can help other users update faster by enabling **Share Updates** in the upda
 
 ---
 
-## 10. Tips & Troubleshooting
+## 11. Tips & Troubleshooting
 
 ### "I can't see any peers"
 
