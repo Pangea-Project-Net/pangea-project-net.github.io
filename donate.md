@@ -12,9 +12,9 @@ The Pangea Project is driven entirely by people who believe in its mission. Whet
 
 We're always looking for passionate people to help on the ground. If you want to get involved in organizing, outreach, or community support:
 
-- [Sign up as a volunteer](#) *(link coming soon)*
+- [Sign up as a volunteer](#) Signup link coming soon-ish, but you can also join our socials and reach out that way.
 - [Join our Reddit page](https://www.reddit.com/r/PangeaProject/)
-- [Join our Discord server](#) *(get the link)*
+- [Join our Discord server](https://discord.gg/rb9TT5TbPe)
 - [Join our Facebook Group](#) *(make the group)*
 
 ---
