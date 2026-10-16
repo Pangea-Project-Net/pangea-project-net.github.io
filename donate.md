@@ -65,6 +65,10 @@ Running this project has real costs. If you'd like to help keep things going:
 
 All funds go directly toward infrastructure and supporting contributors, and soon will be voted on from within the PangeaNet application itself. So that all full members of the Project will help decide its direction and what funds are spent on.
 
+### Donate Directly to Developers
+
+If you want to donate directly to the lead developer (that's me, Jeremy) then check out my [Patreon](https://www.patreon.com/cw/JeremyThePangean) here. All funds go directly to me, to allow me to take time off from my day job and work on the Pangea Project more. Right now my time is spent volunteering my expertise to people in need, programming the PangeaNet P2P social media and community organizing app, and doing managerial work like registering the org in CA and once we get the $275 saved up registering as a federal non profit.
+
 ---
 
 *Thank you for believing in a better world.*
