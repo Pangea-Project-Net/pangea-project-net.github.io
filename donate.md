@@ -15,7 +15,7 @@ We're always looking for passionate people to help on the ground. If you want to
 - [Sign up as a volunteer](#) *(link coming soon)*
 - [Join our Reddit page](https://www.reddit.com/r/PangeaProject/)
 - [Join our Discord server](#) *(get the link)*
-- [Join our Facebook Group](#) *(make the group)*
+- [Join our Facebook Group](https://www.facebook.com/groups/29237722725883169)
 
 ---
 
