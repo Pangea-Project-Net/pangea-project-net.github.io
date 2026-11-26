@@ -128,9 +128,17 @@ async function verifyPage(message) {
     return verifyRsaSignature(originSignaturePayload(proof), proof.signature, proof.publicKey);
 }
 
+const pageParserPolicy = window.trustedTypes?.createPolicy(
+    'pangeanet-page-parser',
+    { createHTML: value => String(value) }
+);
+
 function sanitizeHtml(html) {
     const parser = new DOMParser();
-    const source = parser.parseFromString(html, 'text/html');
+    const parserInput = pageParserPolicy
+        ? pageParserPolicy.createHTML(html)
+        : html;
+    const source = parser.parseFromString(parserInput, 'text/html');
     const fragment = document.createDocumentFragment();
     const allowedTags = new Set([
         'A', 'B', 'BLOCKQUOTE', 'BR', 'CODE', 'DIV', 'EM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
@@ -197,7 +205,7 @@ function decodeBase64(base64) {
     return bytes;
 }
 
-function configurePeerConnection(socket, requestId, iceServers, onPage) {
+function configurePeerConnection(socket, requestId, iceServers, onPage, isResponseReceived) {
     const peer = new RTCPeerConnection({ iceServers });
     let expectedChunks = 0;
     const chunks = [];
@@ -214,10 +222,12 @@ function configurePeerConnection(socket, requestId, iceServers, onPage) {
     });
     peer.addEventListener('datachannel', event => {
         const channel = event.channel;
-        socket.send(JSON.stringify({
-            type: 'web_rtc_connected',
-            requestId
-        }));
+        channel.addEventListener('open', () => {
+            socket.send(JSON.stringify({
+                type: 'web_rtc_connected',
+                requestId
+            }));
+        }, { once: true });
         channel.addEventListener('message', async channelEvent => {
             let message;
             try {
@@ -277,7 +287,7 @@ function configurePeerConnection(socket, requestId, iceServers, onPage) {
         });
     });
     peer.addEventListener('connectionstatechange', () => {
-        if (peer.connectionState === 'failed') {
+        if (!isResponseReceived() && peer.connectionState === 'failed') {
             setError('A direct P2P WebRTC connection could not be established.');
         }
     });
@@ -308,7 +318,7 @@ function connectToRelay(socketUrl, ownerId, pageId, onInitialFailure) {
         renderPage(message);
         socket.close();
         peer.close();
-    });
+    }, () => responseReceived);
     let remoteDescriptionReady = false;
     const pendingRemoteCandidates = [];
     const timeout = window.setTimeout(() => {
