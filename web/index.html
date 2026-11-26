@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://discovery.pangea-project.net wss:; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'; require-trusted-types-for 'script'">
+    <title>PangeaNet Web Page</title>
+    <link rel="stylesheet" href="./web-page.css">
+    <script src="./config.js" defer></script>
+    <script src="./web-page.js" defer></script>
+</head>
+<body>
+    <header class="page-header">
+        <a class="brand" href="./">PangeaNet</a>
+        <div class="hosting-note">Peer-hosted page</div>
+    </header>
+    <main>
+        <div id="status" class="status" role="status" aria-live="polite">
+            Connecting to the PangeaNet host…
+        </div>
+        <article id="page" hidden>
+            <h1 id="page-title"></h1>
+            <p id="page-provenance" class="provenance"></p>
+            <div id="page-content" class="content"></div>
+        </article>
+    </main>
+    <footer>
+        Content is delivered from a live PangeaNet client through an encrypted WebSocket relay.
+        The relay does not store the page.
+    </footer>
+</body>
+</html>
