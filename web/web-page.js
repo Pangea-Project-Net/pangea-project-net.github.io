@@ -62,13 +62,14 @@ function lengthPrefixed(value) {
 }
 
 function responseSignaturePayload(message) {
-    return 'pangeanet.web-page.v1'
+    return 'pangeanet.web-page.v2'
         + lengthPrefixed(message.requestId)
         + lengthPrefixed(message.ownerId)
         + lengthPrefixed(message.pageId)
         + lengthPrefixed(message.title)
         + lengthPrefixed(message.contentHash)
-        + lengthPrefixed(message.updatedAt);
+        + lengthPrefixed(message.updatedAt)
+        + lengthPrefixed(message.buildTrack);
 }
 
 function originSignaturePayload(proof) {
@@ -110,7 +111,8 @@ async function verifyRsaSignature(payloadText, signature, publicKey) {
         payload);
 }
 
-async function verifyPage(message) {
+async function verifyPage(message, buildTrack) {
+    if (message.buildTrack !== buildTrack) return false;
     if (await sha256Text(message.content) !== message.contentHash) return false;
     if (!await verifyIdentityKey(message.hostUserId, message.publicKey)
         || !await verifyRsaSignature(
@@ -205,7 +207,8 @@ function decodeBase64(base64) {
     return bytes;
 }
 
-function configurePeerConnection(socket, requestId, iceServers, onPage, isResponseReceived) {
+function configurePeerConnection(socket, requestId, iceServers, onPage, isResponseReceived,
+                                 onFailure, buildTrack) {
     const peer = new RTCPeerConnection({ iceServers });
     let expectedChunks = 0;
     const chunks = [];
@@ -240,7 +243,7 @@ function configurePeerConnection(socket, requestId, iceServers, onPage, isRespon
                 if (!Number.isInteger(message.chunks)
                     || message.chunks <= 0 || message.chunks > 128) {
                     channel.close();
-                    setError('The page transfer was invalid.');
+                    onFailure('The page transfer was invalid.');
                     return;
                 }
                 expectedChunks = message.chunks;
@@ -251,7 +254,7 @@ function configurePeerConnection(socket, requestId, iceServers, onPage, isRespon
                 if (!Number.isInteger(message.index) || message.index < 0
                     || message.index >= expectedChunks || typeof message.data !== 'string') {
                     channel.close();
-                    setError('The page transfer was invalid.');
+                    onFailure('The page transfer was invalid.');
                     return;
                 }
                 chunks[message.index] = decodeBase64(message.data);
@@ -260,7 +263,7 @@ function configurePeerConnection(socket, requestId, iceServers, onPage, isRespon
             if (message.type !== 'web_page_end' || expectedChunks === 0) return;
             if (chunks.length !== expectedChunks || chunks.some(chunk => !chunk)) {
                 channel.close();
-                setError('The page transfer was incomplete.');
+                onFailure('The page transfer was incomplete.');
                 return;
             }
             try {
@@ -275,42 +278,48 @@ function configurePeerConnection(socket, requestId, iceServers, onPage, isRespon
                 const pageMessage = JSON.parse(new TextDecoder().decode(payload));
                 if (typeof pageMessage.content !== 'string'
                     || encoder.encode(pageMessage.content).length > MAX_CONTENT_BYTES
-                    || !await verifyPage(pageMessage)) {
+                    || !await verifyPage(pageMessage, buildTrack)) {
                     throw new Error('verification');
                 }
                 onPage(pageMessage);
                 channel.close();
             } catch {
-                setError('The direct page response did not pass host-signature verification.');
+                onFailure('The direct page response did not pass host-signature verification.');
                 channel.close();
             }
         });
     });
     peer.addEventListener('connectionstatechange', () => {
         if (!isResponseReceived() && peer.connectionState === 'failed') {
-            setError('A direct P2P WebRTC connection could not be established.');
+            onFailure('A direct P2P WebRTC connection could not be established.');
         }
     });
     return peer;
 }
 
-function connectToRelay(socketUrl, ownerId, pageId, onInitialFailure) {
+function connectToRelay(socketUrl, ownerId, pageId, buildTrack, onCandidateFailure) {
     const requestId = crypto.randomUUID();
     const socket = new WebSocket(socketUrl);
     let responseReceived = false;
-    let socketOpened = false;
-    let initialFailureNotified = false;
-    const reportInitialFailure = () => {
-        if (initialFailureNotified) return;
-        initialFailureNotified = true;
-        onInitialFailure();
+    let candidateFailed = false;
+    let peer;
+    let timeout;
+    const reportCandidateFailure = message => {
+        if (candidateFailed || responseReceived) return;
+        candidateFailed = true;
+        window.clearTimeout(timeout);
+        socket.close();
+        peer?.close();
+        onCandidateFailure(message);
     };
     const iceServers = Array.isArray(window.PANGEANET_WEB_CONFIG?.iceServers)
         ? window.PANGEANET_WEB_CONFIG.iceServers
         : [{ urls: 'stun:stun.l.google.com:19302' }];
-    const peer = configurePeerConnection(socket, requestId, iceServers, message => {
-        if (message.ownerId !== ownerId || message.pageId !== pageId) {
-            setError('The direct page response did not match the requested page.');
+    peer = configurePeerConnection(socket, requestId, iceServers, message => {
+        if (message.ownerId !== ownerId || message.pageId !== pageId
+            || message.buildTrack !== buildTrack) {
+            reportCandidateFailure(
+                'The direct page response did not match the requested page and build track.');
             return;
         }
         responseReceived = true;
@@ -318,23 +327,21 @@ function connectToRelay(socketUrl, ownerId, pageId, onInitialFailure) {
         renderPage(message);
         socket.close();
         peer.close();
-    }, () => responseReceived);
+    }, () => responseReceived, reportCandidateFailure, buildTrack);
     let remoteDescriptionReady = false;
     const pendingRemoteCandidates = [];
-    const timeout = window.setTimeout(() => {
+    timeout = window.setTimeout(() => {
         if (responseReceived) return;
-        setError('No PangeaNet host completed a direct WebRTC connection.');
-        socket.close();
-        peer.close();
+        reportCandidateFailure('No PangeaNet host completed a direct WebRTC connection.');
     }, 45000);
 
     socket.addEventListener('open', () => {
-        socketOpened = true;
         socket.send(JSON.stringify({
             type: 'web_page_request',
             requestId,
             ownerId,
-            pageId
+            pageId,
+            track: buildTrack
         }));
     });
     socket.addEventListener('message', async event => {
@@ -346,10 +353,7 @@ function connectToRelay(socketUrl, ownerId, pageId, onInitialFailure) {
         }
         if (message.requestId !== requestId) return;
         if (message.type === 'web_page_unavailable') {
-            responseReceived = true;
-            window.clearTimeout(timeout);
-            setError(message.message || 'The page is currently unavailable.');
-            socket.close();
+            reportCandidateFailure(message.message || 'The page is currently unavailable.');
             return;
         }
         try {
@@ -386,26 +390,20 @@ function connectToRelay(socketUrl, ownerId, pageId, onInitialFailure) {
                 }
             }
         } catch {
-            setError('The WebRTC connection negotiation failed.');
+            reportCandidateFailure('The WebRTC connection negotiation failed.');
         }
     });
-    socket.addEventListener('error', () => {
-        if (!responseReceived && !socketOpened) {
-            reportInitialFailure();
-        }
-    });
+    socket.addEventListener('error', () => reportCandidateFailure(
+        'The PangeaNet relay could not complete the signaling connection.'));
     socket.addEventListener('close', () => {
-        if (!responseReceived && !socketOpened) {
-            reportInitialFailure();
-        } else if (!responseReceived) {
-            setError('No PangeaNet host is connected for this page.');
-        }
+        reportCandidateFailure('The PangeaNet relay closed before the page was delivered.');
     });
 }
 
-function relaySocketUrl(relay) {
+function relaySocketUrl(relay, buildTrack) {
     const address = String(relay?.address || '').trim();
     const port = Number(relay?.port || 443);
+    if (String(relay?.buildTrack || '').trim().toUpperCase() !== buildTrack) return null;
     if (!address || !Number.isInteger(port) || port < 1 || port > 65535) return null;
     const host = address.includes(':') && !address.startsWith('[')
         ? `[${address}]`
@@ -418,8 +416,14 @@ async function start() {
     const params = new URLSearchParams(window.location.search);
     const ownerId = params.get('owner') || '';
     const pageId = params.get('page') || '';
+    const rawTrack = params.get('track') || 'RELEASE';
+    const buildTrack = rawTrack.trim().toUpperCase();
     if (!safeIdentifier(ownerId) || !safeIdentifier(pageId)) {
         setError('This PangeaNet web link has invalid page identifiers.');
+        return;
+    }
+    if (buildTrack !== 'DEBUG' && buildTrack !== 'RELEASE') {
+        setError('This PangeaNet web link has an invalid build track.');
         return;
     }
     try {
@@ -428,6 +432,7 @@ async function start() {
         if (discoveryUrl.protocol !== 'https:') {
             throw new Error('discovery');
         }
+        discoveryUrl.searchParams.set('buildTrack', buildTrack);
         const response = await fetch(discoveryUrl, {
             cache: 'no-store',
             credentials: 'omit',
@@ -436,20 +441,21 @@ async function start() {
         if (!response.ok) throw new Error('discovery');
         const data = await response.json();
         const candidates = Array.isArray(data.relays)
-            ? data.relays.map(relaySocketUrl).filter(Boolean)
+            ? data.relays.map(relay => relaySocketUrl(relay, buildTrack)).filter(Boolean)
             : [];
         if (!candidates.length) {
             setError('No PangeaNet relay client is currently online.');
             return;
         }
         let candidateIndex = 0;
-        const tryNextRelay = () => {
+        const tryNextRelay = lastFailure => {
             if (candidateIndex >= candidates.length) {
-                setError('None of the advertised PangeaNet relay clients could be reached.');
+                setError(lastFailure
+                    || 'None of the advertised PangeaNet relay clients could be reached.');
                 return;
             }
             const candidate = candidates[candidateIndex++];
-            connectToRelay(candidate, ownerId, pageId, tryNextRelay);
+            connectToRelay(candidate, ownerId, pageId, buildTrack, tryNextRelay);
         };
         tryNextRelay();
     } catch {
